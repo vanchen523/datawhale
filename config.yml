@@ -1,0 +1,22 @@
+# Model related arguments
+model:
+  word_embedding_size: 300
+  lstm_hidden_size: 512
+  lstm_num_layers: 2
+  dropout: 0.5
+  vocabulary: 859
+
+
+# Optimization related arguments
+solver:
+  batch_size: 64
+  num_epochs: 100
+  initial_lr: 0.001
+  training_splits: "train"  # "trainval"
+  lr_gamma: 0.1
+  lr_milestones: # epochs when lr => lr * lr_gamma
+    - 4
+    - 7
+    - 10
+  warmup_factor: 0.2
+  warmup_epochs: 1
