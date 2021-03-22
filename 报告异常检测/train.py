@@ -29,7 +29,7 @@ if __name__ == "__main__":
     datapath = '/home/van/文档/0-进行中/0-比赛/0-code/0-天池/全球人工智能技术创新大赛【赛道一】/data/track1_round1_train_20210222.csv'
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(device)
+    print('batch size',config["solver"]["batch_size"],'\nnum_epochs',config["solver"]["num_epochs"])
     start_epoch = 0
     iterations = 10000 // config["solver"]["batch_size"] + 1
     def lr_lambda_fun(current_iteration: int) -> float:

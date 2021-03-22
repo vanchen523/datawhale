@@ -87,7 +87,10 @@ class AbnormalDetect(nn.Module):
 
         self.convs = nn.ModuleList([nn.Conv2d(Ci, kernel_num, (K, config["word_embedding_size"])) for K in Ks])
         self.dropout = nn.Dropout(0.5)
-        self.fc1 = nn.Linear(config["lstm_hidden_size"]+len(Ks) * kernel_num, class_num)
+        self.fc = nn.Linear(config["lstm_hidden_size"] + len(Ks) * kernel_num, class_num)
+        # self.fc1 = nn.Linear(config["lstm_hidden_size"], class_num)
+        # self.fc2 = nn.Linear(len(Ks) * kernel_num, class_num)
+        # self.fc3 = nn.Linear(class_num*2, class_num)
 
         if static:
             self.embed.weight.requires_grad = False
@@ -95,12 +98,15 @@ class AbnormalDetect(nn.Module):
     def forward(self, x, xlen):
         x = self.embed(x)  # (N, W, D)-batch,单词数量，维度
         _, (x1, _) = self.rnn(x, xlen)
+        # x1 = self.fc1(x1)
         x = x.unsqueeze(1)
         x2 = [F.relu(conv(x)).squeeze(3) for conv in self.convs]
         x2 = [F.max_pool1d(i, i.size(2)).squeeze(2) for i in x2]
-        x = torch.cat(x1, x2, 1)
+        x2 = torch.cat(x2, 1)
+        # x2 = self.fc2(x2)
+        x = torch.cat((x1, x2), 1)
         x = self.dropout(x)  # (N, len(Ks)*Co)        
-        x = self.fc1(x)  # (N, C)
+        x = self.fc(x)  # (N, C)
         # print(torch.sigmoid(x))
         return x
     
